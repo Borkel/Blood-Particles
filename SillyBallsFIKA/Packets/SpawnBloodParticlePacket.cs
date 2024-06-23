@@ -18,6 +18,7 @@ namespace BloodParticles.Packets
         public void Serialize(NetDataWriter writer)
         {
             writer.Put(spawnPosition);
+            writer.Put(type);
         }
     }
 }
