@@ -5,6 +5,8 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloodParticlesSPT", "SillyBallsSPT\BloodParticlesSPT.csproj", "{513F5F9D-9552-4BAC-822A-517964229F32}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloodParticlesFIKA", "SillyBallsFIKA\BloodParticlesFIKA.csproj", "{513F5F9D-9552-4BAC-822A-517964229F32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
