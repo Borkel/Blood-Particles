@@ -19,18 +19,28 @@ namespace BloodParticles.Patches
                 && damageInfo.DamageType != EDamageType.GrenadeFragment && damageInfo.DamageType != EDamageType.Landmine &&
                 damageInfo.DamageType != EDamageType.Melee)
                 return; //maybe implement bleeds*/
+            /*if (bodyPartType == 0)
+                Logger.LogMessage($"DAMAGE: {damageInfo.Damage}");*/
+            if (!Plugin.Enabled.Value)
+                return;
             if (damageInfo.DamageType == EDamageType.Explosion || damageInfo.DamageType == EDamageType.Landmine
                 || damageInfo.BlockedBy != "" || damageInfo.DeflectedBy != "")
                 return;
-            GameObject bloodParticles;
             bool LongerParticles = Plugin.LongerParticles.Value;
+            Vector3 direction = damageInfo.Direction.normalized;
+            Quaternion rotation1 = Quaternion.LookRotation(direction);
             if (bodyPartType == 0 && damageInfo.DamageType != EDamageType.Melee && damageInfo.DamageType != EDamageType.GrenadeFragment)
-                bloodParticles = Object.Instantiate(LongerParticles ? Plugin.bloodParticlesHead : Plugin.bloodParticlesHeadShort, damageInfo.HitPoint, Quaternion.identity);
-            else
-                bloodParticles = Object.Instantiate(LongerParticles ? Plugin.bloodParticlesBody : Plugin.bloodParticlesBodyShort, damageInfo.HitPoint, Quaternion.identity);
-            ParticleSystem particleSystem = bloodParticles.GetComponent<ParticleSystem>();
-            if (particleSystem != null)
-                particleSystem.Emit(1);
+                Object.Instantiate(LongerParticles ? Plugin.bloodParticlesHead : Plugin.bloodParticlesHeadShort, damageInfo.HitPoint, rotation1);
+            //GameObject bloodParticlesBody;// = Object.Instantiate(LongerParticles ? Plugin.bloodParticlesBody : Plugin.bloodParticlesBodyShort, damageInfo.HitPoint, rotation1);
+            if(damageInfo.Damage>=30)
+                Object.Instantiate(LongerParticles ? Plugin.bloodParticlesBody : Plugin.bloodParticlesBodyShort, damageInfo.HitPoint, rotation1);
+            else //prevents buckshot from spawning too many particles
+                Object.Instantiate(LongerParticles ? Plugin.bloodParticlesBodySmall : Plugin.bloodParticlesBodySmallShort, damageInfo.HitPoint, rotation1);
+            /*ParticleSystem particleSystemHead = bloodParticlesHead.GetComponent<ParticleSystem>();
+            ParticleSystem particleSystemBody = bloodParticlesBody.GetComponent<ParticleSystem>();
+            if (bodyPartType == 0 && damageInfo.DamageType != EDamageType.Melee && damageInfo.DamageType != EDamageType.GrenadeFragment)
+                particleSystemHead.Emit(1);
+            particleSystemBody.Emit(1);*/
         }
     }
 }

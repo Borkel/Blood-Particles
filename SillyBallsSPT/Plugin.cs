@@ -19,10 +19,14 @@ namespace BloodParticles
         public static GameObject bloodParticlesHeadShort;
         public static GameObject bloodParticlesBody;
         public static GameObject bloodParticlesBodyShort;
+        public static GameObject bloodParticlesBodySmall;
+        public static GameObject bloodParticlesBodySmallShort;
 
         public static ConfigEntry<bool> LongerParticles;
+        public static ConfigEntry<bool> Enabled;
         void Awake()
         {
+            Enabled = Config.Bind("0.Particles", "Enable blood particles", true, "Enables blood particles");
             LongerParticles = Config.Bind("0.Particles", "Longer lasting particles", false, "Extends the duration of the particles");
 
             string pluginDirectory = $"{directory}";//plugin folder
@@ -34,7 +38,10 @@ namespace BloodParticles
             bloodParticlesHeadShort = assetBundle.LoadAsset<GameObject>("BloodParticlesHeadShort");
             bloodParticlesBody = assetBundle.LoadAsset<GameObject>("BloodParticlesBody");
             bloodParticlesBodyShort = assetBundle.LoadAsset<GameObject>("BloodParticlesBodyShort");
-            if(bloodParticlesBody == null || bloodParticlesBodyShort==null || bloodParticlesHead == null || bloodParticlesHeadShort==null)
+            bloodParticlesBodySmall = assetBundle.LoadAsset<GameObject>("BloodParticlesBodySmall");
+            bloodParticlesBodySmallShort = assetBundle.LoadAsset<GameObject>("BloodParticlesBodySmallShort");
+            if(bloodParticlesBody == null || bloodParticlesBodyShort==null || bloodParticlesHead == null || bloodParticlesHeadShort==null
+                || bloodParticlesBodySmall==null || bloodParticlesBodySmallShort==null)
             {
                 Logger.LogError("error loading particles assets");
                 return;

@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{513F5F9D-9552-4BAC-822A-517964229F32}</ProjectGuid>
+    <ProjectGuid>{DB27B67F-DC6E-42DA-9F3E-2E1ADC781959}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BloodParticles</RootNamespace>
