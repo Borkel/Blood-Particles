@@ -16,7 +16,7 @@ namespace BloodParticles.Patches
             return typeof(Player).GetMethod(nameof(Player.ApplyDamageInfo));
         }
 
-        [PatchPrefix]
+        [PatchPostfix]
         public static void Prefix(DamageInfo damageInfo, EBodyPart bodyPartType, EBodyPartColliderType colliderType, float absorbed)
         {
             /*if (damageInfo.DamageType != EDamageType.Bullet && damageInfo.DamageType != EDamageType.Sniper && damageInfo.DamageType != EDamageType.Explosion
@@ -62,10 +62,7 @@ namespace BloodParticles.Patches
         public static void SpawnBloodParticleFromServerOnClient(Vector3 position, bool type)
         {
             bool longerParticles = Plugin.LongerParticles.Value;
-            if (type)
-                SpawnBloodParticles(position, true, longerParticles); 
-            else
-                SpawnBloodParticles(position, false, longerParticles); 
+            SpawnBloodParticles(position, type, longerParticles);
         }
     }
 }
