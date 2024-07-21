@@ -1,4 +1,4 @@
-﻿using Aki.Reflection.Patching;
+﻿using SPT.Reflection.Patching;
 using EFT;
 using System.Reflection;
 using UnityEngine;
@@ -28,19 +28,47 @@ namespace BloodParticles.Patches
                 return;
             bool LongerParticles = Plugin.LongerParticles.Value;
             Vector3 direction = damageInfo.Direction.normalized;
-            Quaternion rotation1 = Quaternion.LookRotation(direction);
-            if (bodyPartType == 0 && damageInfo.DamageType != EDamageType.Melee && damageInfo.DamageType != EDamageType.GrenadeFragment)
-                Object.Instantiate(LongerParticles ? Plugin.bloodParticlesHead : Plugin.bloodParticlesHeadShort, damageInfo.HitPoint, rotation1);
-            //GameObject bloodParticlesBody;// = Object.Instantiate(LongerParticles ? Plugin.bloodParticlesBody : Plugin.bloodParticlesBodyShort, damageInfo.HitPoint, rotation1);
-            if(damageInfo.Damage>=30)
-                Object.Instantiate(LongerParticles ? Plugin.bloodParticlesBody : Plugin.bloodParticlesBodyShort, damageInfo.HitPoint, rotation1);
-            else //prevents buckshot from spawning too many particles
-                Object.Instantiate(LongerParticles ? Plugin.bloodParticlesBodySmall : Plugin.bloodParticlesBodySmallShort, damageInfo.HitPoint, rotation1);
-            /*ParticleSystem particleSystemHead = bloodParticlesHead.GetComponent<ParticleSystem>();
-            ParticleSystem particleSystemBody = bloodParticlesBody.GetComponent<ParticleSystem>();
-            if (bodyPartType == 0 && damageInfo.DamageType != EDamageType.Melee && damageInfo.DamageType != EDamageType.GrenadeFragment)
-                particleSystemHead.Emit(1);
-            particleSystemBody.Emit(1);*/
+            Vector3 directionInv = direction * -1;
+            Quaternion rotation = Quaternion.LookRotation(direction);
+            Quaternion rotationInv = Quaternion.LookRotation(directionInv);
+            if (bodyPartType == 0 && damageInfo.DamageType != EDamageType.Melee && damageInfo.DamageType != EDamageType.GrenadeFragment) //if headshot
+            {
+                if (damageInfo.Damage < 30)
+                {
+                    Object.Instantiate(LongerParticles ? Plugin.blood13 : Plugin.blood13short, damageInfo.HitPoint, rotationInv);
+                    Object.Instantiate(LongerParticles ? Plugin.blood80 : Plugin.blood80short, damageInfo.HitPoint, rotation);
+                    return;
+                } //buckshot
+                else
+                {
+                    Object.Instantiate(LongerParticles ? Plugin.blood40 : Plugin.blood40short, damageInfo.HitPoint, rotationInv);
+                    Object.Instantiate(LongerParticles ? Plugin.blood160 : Plugin.blood160short, damageInfo.HitPoint, rotation);
+                    return;
+                }
+            }
+            else if(damageInfo.Damage<30) //buckshot
+            {
+                Object.Instantiate(LongerParticles ? Plugin.blood13 : Plugin.blood13short, damageInfo.HitPoint, rotationInv);
+                return;
+            }
+            else if (damageInfo.Damage < 60)
+            {
+                Object.Instantiate(LongerParticles ? Plugin.blood13 : Plugin.blood13short, damageInfo.HitPoint, rotationInv);
+                Object.Instantiate(LongerParticles ? Plugin.blood20 : Plugin.blood20short, damageInfo.HitPoint, rotation);
+                    return;
+            }
+            else if (damageInfo.Damage < 100)
+            {
+                Object.Instantiate(LongerParticles ? Plugin.blood20 : Plugin.blood20short, damageInfo.HitPoint, rotationInv);
+                Object.Instantiate(LongerParticles ? Plugin.blood40 : Plugin.blood40short, damageInfo.HitPoint, rotation);
+                    return;
+            }
+            else
+            {
+                Object.Instantiate(LongerParticles ? Plugin.blood40 : Plugin.blood40short, damageInfo.HitPoint, rotationInv);
+                Object.Instantiate(LongerParticles ? Plugin.blood80 : Plugin.blood80short, damageInfo.HitPoint, rotation);
+                    return;
+            }
         }
     }
 }
