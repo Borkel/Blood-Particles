@@ -39,6 +39,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\SPTarkov3.9.0\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="Comfort, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\SPTarkov3.9.0\EscapeFromTarkov_Data\Managed\Comfort.dll</HintPath>
+    </Reference>
     <Reference Include="spt-common">
       <HintPath>C:\SPTarkov3.9.0\BepInEx\plugins\spt\spt-common.dll</HintPath>
     </Reference>
@@ -56,8 +60,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="UnityEngine">
-      <HintPath>C:\SPTarkov3.8.0\EscapeFromTarkov_Data\Managed\UnityEngine.dll</HintPath>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\SPTarkov3.9.0\EscapeFromTarkov_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -75,6 +80,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomParticle.cs" />
     <Compile Include="Patches\ApplyDamageInfoPatch.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

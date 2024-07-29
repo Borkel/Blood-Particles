@@ -2,7 +2,6 @@
 using EFT;
 using System.Reflection;
 using UnityEngine;
-
 namespace BloodParticles.Patches
 {
     public class ApplyDamageInfoPatch : ModulePatch
@@ -12,21 +11,14 @@ namespace BloodParticles.Patches
             return typeof(Player).GetMethod(nameof(Player.ApplyDamageInfo));
         }
 
-        [PatchPrefix]
+        [PatchPostfix]
         public static void Postfix(DamageInfo damageInfo, EBodyPart bodyPartType, EBodyPartColliderType colliderType, float absorbed)
         {
-            /*if (damageInfo.DamageType != EDamageType.Bullet && damageInfo.DamageType != EDamageType.Sniper && damageInfo.DamageType != EDamageType.Explosion
-                && damageInfo.DamageType != EDamageType.GrenadeFragment && damageInfo.DamageType != EDamageType.Landmine &&
-                damageInfo.DamageType != EDamageType.Melee)
-                return; //maybe implement bleeds*/
-            /*if (bodyPartType == 0)
-                Logger.LogMessage($"DAMAGE: {damageInfo.Damage}");*/
             if (!Plugin.Enabled.Value)
                 return;
             if (damageInfo.DamageType == EDamageType.Explosion || damageInfo.DamageType == EDamageType.Landmine
                 || damageInfo.BlockedBy != "" || damageInfo.DeflectedBy != "")
                 return;
-            bool LongerParticles = Plugin.LongerParticles.Value;
             Vector3 direction = damageInfo.Direction.normalized;
             Vector3 directionInv = direction * -1;
             Quaternion rotation = Quaternion.LookRotation(direction);
@@ -35,39 +27,40 @@ namespace BloodParticles.Patches
             {
                 if (damageInfo.Damage < 30)
                 {
-                    Object.Instantiate(LongerParticles ? Plugin.blood13 : Plugin.blood13short, damageInfo.HitPoint, rotationInv);
-                    Object.Instantiate(LongerParticles ? Plugin.blood80 : Plugin.blood80short, damageInfo.HitPoint, rotation);
+                    ParticleHelper.CreateParticle(Plugin.blood13, damageInfo.HitPoint, rotationInv);
+                    ParticleHelper.CreateParticle(Plugin.blood40, damageInfo.HitPoint, rotation);
                     return;
                 } //buckshot
                 else
                 {
-                    Object.Instantiate(LongerParticles ? Plugin.blood40 : Plugin.blood40short, damageInfo.HitPoint, rotationInv);
-                    Object.Instantiate(LongerParticles ? Plugin.blood160 : Plugin.blood160short, damageInfo.HitPoint, rotation);
+                    // AHHHHHHHHH SPAM A BILLION TRILLION PARTICLES AND LAG THE GAME!!!!!!!!!    - pein, 29/07/2024
+                    ParticleHelper.CreateParticle(Plugin.blood20, damageInfo.HitPoint, rotationInv);
+                    ParticleHelper.CreateParticle(Plugin.blood160, damageInfo.HitPoint, rotation);
                     return;
                 }
             }
-            else if(damageInfo.Damage<30) //buckshot
+            else if (damageInfo.Damage < 30) //buckshot
             {
-                Object.Instantiate(LongerParticles ? Plugin.blood13 : Plugin.blood13short, damageInfo.HitPoint, rotationInv);
+                ParticleHelper.CreateParticle(Plugin.blood13, damageInfo.HitPoint, rotationInv);
                 return;
             }
-            else if (damageInfo.Damage < 60)
+            else if (damageInfo.Damage < 60) //smgs and hadnguns
             {
-                Object.Instantiate(LongerParticles ? Plugin.blood13 : Plugin.blood13short, damageInfo.HitPoint, rotationInv);
-                Object.Instantiate(LongerParticles ? Plugin.blood20 : Plugin.blood20short, damageInfo.HitPoint, rotation);
-                    return;
+                ParticleHelper.CreateParticle(Plugin.blood13, damageInfo.HitPoint, rotationInv);
+                ParticleHelper.CreateParticle(Plugin.blood20, damageInfo.HitPoint, rotation);
+                return;
             }
-            else if (damageInfo.Damage < 100)
+            else if (damageInfo.Damage < 100) //5.56
             {
-                Object.Instantiate(LongerParticles ? Plugin.blood20 : Plugin.blood20short, damageInfo.HitPoint, rotationInv);
-                Object.Instantiate(LongerParticles ? Plugin.blood40 : Plugin.blood40short, damageInfo.HitPoint, rotation);
-                    return;
+                ParticleHelper.CreateParticle(Plugin.blood13, damageInfo.HitPoint, rotationInv);
+                ParticleHelper.CreateParticle(Plugin.blood40, damageInfo.HitPoint, rotation);
+                return;
             }
-            else
+            else //7.62
             {
-                Object.Instantiate(LongerParticles ? Plugin.blood40 : Plugin.blood40short, damageInfo.HitPoint, rotationInv);
-                Object.Instantiate(LongerParticles ? Plugin.blood80 : Plugin.blood80short, damageInfo.HitPoint, rotation);
-                    return;
+                ParticleHelper.CreateParticle(Plugin.blood20, damageInfo.HitPoint, rotationInv);
+                ParticleHelper.CreateParticle(Plugin.blood80, damageInfo.HitPoint, rotation);
+                return;
             }
         }
     }
