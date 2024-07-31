@@ -80,6 +80,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigurationManagerAttributes.cs" />
     <Compile Include="CustomParticle.cs" />
     <Compile Include="Patches\ApplyDamageInfoPatch.cs" />
     <Compile Include="Plugin.cs" />
