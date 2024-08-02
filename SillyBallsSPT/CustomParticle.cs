@@ -9,6 +9,36 @@ using EFT;
 
 namespace BloodParticles
 {
+    public struct ParticleInfo
+    {
+        public float Damage;
+        public EDamageType DamageType;
+
+        public Vector3 Position;
+        public Vector3 Direction;
+        public ParticleSystemShapeType EmitterShape;
+
+        public float BloodAngle;
+        public float BloodAmountMultiplier;
+        public float BloodVelocityMin;
+        public float BloodVelocityMax;
+
+        public ParticleInfo(DamageInfo damageInfo, Vector3 position, Vector3 direction, ParticleSystemShapeType emitterShape, float bloodAngle, float bloodMult, float bloodMin, float bloodMax)
+        {
+            Damage = damageInfo.Damage;
+            DamageType = damageInfo.DamageType;
+
+            Position = position;
+            Direction = direction;
+            EmitterShape = emitterShape;
+
+            BloodAngle = bloodAngle;
+            BloodAmountMultiplier = bloodMult;
+            BloodVelocityMin = bloodMin;
+            BloodVelocityMax = bloodMax;
+        }
+    }
+
     public class CollisionHandler : MonoBehaviour
     {
         //public ManualLogSource logSource = new ManualLogSource("Particle");
@@ -62,47 +92,42 @@ namespace BloodParticles
             _bloodPrefab = _bloodBundle.LoadAsset<GameObject>("blood13");
         }
 
-        public static void CreateBlood(DamageInfo damageInfo, Vector3 position, Quaternion rotation, float BloodVelocityMin, float BloodVelocityMax
-            ,float BloodAngle, float BloodAmountMultiplier, bool headshot)
+        public static void CreateBlood(ParticleInfo particleInfo)
         {
-            GameObject newParticle = Object.Instantiate(_bloodPrefab, position, rotation);
-            float internalMultiplier=1f;
+            Vector3 position = particleInfo.Position;
+            Quaternion rotation = Quaternion.LookRotation(particleInfo.Direction);
+            EDamageType damageType = particleInfo.DamageType;
 
-            // get the particle component
+            GameObject newParticle = Object.Instantiate(_bloodPrefab, position, rotation);
+
+            // set particle properties
             ParticleSystem particleSystem = newParticle.GetComponent<ParticleSystem>();
             var main = particleSystem.main;
             main.stopAction = ParticleSystemStopAction.Destroy; // just to make sure
-            main.startSpeed = Random.Range(BloodVelocityMin, BloodVelocityMax);
-
+            main.startSpeed = new ParticleSystem.MinMaxCurve(particleInfo.BloodVelocityMin, particleInfo.BloodVelocityMax);
+            
             // set shape properties
             var shape = particleSystem.shape;
-            shape.shapeType = ParticleSystemShapeType.Cone;
-            shape.angle = BloodAngle;
+            shape.shapeType = particleInfo.EmitterShape;
+            shape.angle = particleInfo.BloodAngle;
             shape.radius = 0.01f;
-            shape.radiusThickness = 0.99f;
+
+            // i dont think these actually do anything significant but if they do then feel free to uncomment
             shape.randomDirectionAmount = 0.5f;
             shape.randomPositionAmount = 0.1f;
-
-            //take into account grenade fragmentation and headhsots
-            if (headshot && damageInfo.DamageType != EDamageType.GrenadeFragment)
-                internalMultiplier = 2f;
-            else if (damageInfo.DamageType == EDamageType.GrenadeFragment)
-            {
-                shape.shapeType = ParticleSystemShapeType.Sphere;
-                internalMultiplier = 0.20f;
-            }
 
             // set emission properties
             var emission = particleSystem.emission;
             var burstInfo = emission.GetBurst(0);
-            burstInfo.count = Mathf.CeilToInt((damageInfo.Damage / 5) * BloodAmountMultiplier * internalMultiplier);
+            burstInfo.count = Mathf.CeilToInt((particleInfo.Damage / 5) * particleInfo.BloodAmountMultiplier);
             emission.SetBurst(0, burstInfo);
 
             // add collisionhandler component
             CollisionHandler collisionHandler = newParticle.AddComponent<CollisionHandler>();
 
             // start the emitter
-            particleSystem.Play();
+            // or not since it starts itself anyway...
+            // particleSystem.Play();
         }
     }
 }

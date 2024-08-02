@@ -8,12 +8,27 @@ namespace BloodParticles.Patches
 {
     public class ApplyDamageInfoPatch : ModulePatch
     {
+        private static bool AttackPenetrated(DamageInfo damageInfo)
+        {
+            return String.IsNullOrEmpty(damageInfo.BlockedBy) || String.IsNullOrEmpty(damageInfo.DeflectedBy);
+        }
+
+        private static bool IsExplosionDamage(EDamageType damageType)
+        {
+            return damageType == EDamageType.Explosion || damageType == EDamageType.Landmine;
+        }
+
+        private static bool ShouldNotDoExitWound(DamageInfo damageInfo)
+        {
+            return damageInfo.Damage < 30 || damageInfo.DamageType == EDamageType.Melee || damageInfo.DamageType == EDamageType.GrenadeFragment;
+        }
+
         protected override MethodBase GetTargetMethod()
         {
             return typeof(Player).GetMethod(nameof(Player.ApplyDamageInfo));
         }
 
-        [PatchPrefix]
+        [PatchPostfix]
         public static void Postfix(DamageInfo damageInfo, EBodyPart bodyPartType, EBodyPartColliderType colliderType, float absorbed)
         {
             if (!Plugin.Enabled.Value)
@@ -22,27 +37,62 @@ namespace BloodParticles.Patches
             }
 
             EDamageType dmgType = damageInfo.DamageType;
-            bool penetrated = (String.IsNullOrEmpty(damageInfo.BlockedBy) || String.IsNullOrEmpty(damageInfo.DeflectedBy));
-            bool explosionDamage = (dmgType == EDamageType.Explosion || dmgType == EDamageType.Landmine);
-            Logger.LogInfo(penetrated);
+            float damage = damageInfo.Damage;
+            bool explosionDamage = IsExplosionDamage(dmgType);
+            bool penetrated = AttackPenetrated(damageInfo);
 
             if (explosionDamage || !penetrated)
             {
                 return;
             }
 
+            ParticleSystemShapeType shapeType = ParticleSystemShapeType.Cone;
+            float bloodMult = 1f;
+
+            if (bodyPartType == EBodyPart.Head && dmgType != EDamageType.GrenadeFragment)
+            {
+                bloodMult = Plugin.HeadshotMultiplier.Value;
+            }
+            else if (dmgType == EDamageType.GrenadeFragment)
+            {
+                bloodMult = 0.2f;
+                shapeType = ParticleSystemShapeType.Sphere;
+            }
+
             // entry wound
+            Vector3 hitPos = damageInfo.HitPoint;
             Vector3 entryDirection = -damageInfo.Direction.normalized;
-            Quaternion entryRotation = Quaternion.LookRotation(entryDirection);
-            ParticleHelper.CreateBlood(damageInfo, damageInfo.HitPoint, entryRotation, Plugin.EntryBloodVelocityMin.Value, Plugin.EntryBloodVelocityMax.Value,
-                Plugin.EntryBloodAngle.Value, Plugin.EntryBloodAmountMultiplier.Value, false);
-            if (damageInfo.Damage < 30 || damageInfo.DamageType == EDamageType.Melee || dmgType == EDamageType.GrenadeFragment) //only do exit wounds if enough damage is applied or not melee (buckshot should not go through)
+
+            ParticleHelper.CreateBlood(new ParticleInfo(
+                damageInfo,
+                hitPos,
+                entryDirection,
+                shapeType,
+                Plugin.EntryBloodAngle.Value,
+                Plugin.EntryBloodAmountMultiplier.Value * bloodMult,
+                Plugin.EntryBloodVelocityMin.Value,
+                Plugin.EntryBloodVelocityMax.Value
+            ));
+
+            // only do exit wounds if enough damage is applied or not melee (buckshot should not go through)
+            if (ShouldNotDoExitWound(damageInfo))
+            {
                 return;
+            }
+
             // exit wound
             Vector3 exitDirection = damageInfo.Direction.normalized;
-            Quaternion exitRotation = Quaternion.LookRotation(exitDirection);
-            ParticleHelper.CreateBlood(damageInfo, damageInfo.HitPoint, exitRotation, Plugin.ExitBloodVelocityMin.Value, Plugin.ExitBloodVelocityMax.Value,
-                Plugin.ExitBloodAngle.Value, Plugin.ExitBloodAmountMultiplier.Value, bodyPartType == 0);
+
+            ParticleHelper.CreateBlood(new ParticleInfo(
+                damageInfo,
+                hitPos,
+                exitDirection,
+                shapeType,
+                Plugin.ExitBloodAngle.Value,
+                Plugin.ExitBloodAmountMultiplier.Value * bloodMult,
+                Plugin.ExitBloodVelocityMin.Value,
+                Plugin.ExitBloodVelocityMax.Value
+            ));
         }
     }
 }
