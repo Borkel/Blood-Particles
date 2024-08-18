@@ -55,6 +55,8 @@ namespace BloodParticles
 
         public void OnParticleCollision(GameObject other)
         {
+            if(other == null)
+                return;
             int numEvents = particleSystem.GetCollisionEvents(other, collisionEvents);
             int i = 0;
 

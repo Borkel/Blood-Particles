@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace BloodParticles
 {
-    [BepInPlugin("com.borkel.bloodparticles", "Borkel's Blood Particles", "1.2.1")]
+    [BepInPlugin("com.borkel.bloodparticles", "Borkel's Blood Particles", "1.2.2")]
     public class Plugin : BaseUnityPlugin
     {
         public static readonly string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
