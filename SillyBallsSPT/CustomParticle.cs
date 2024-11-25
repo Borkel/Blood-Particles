@@ -104,7 +104,7 @@ namespace BloodParticles
                 OnBloodParticleCreated?.Invoke(this, particleInfo);
             }
 
-			Vector3 position = particleInfo.Position;
+            Vector3 position = particleInfo.Position;
             Quaternion rotation = Quaternion.LookRotation(particleInfo.Direction);
             EDamageType damageType = particleInfo.DamageType;
 
@@ -135,9 +135,9 @@ namespace BloodParticles
             // add collisionhandler component
             CollisionHandler collisionHandler = newParticle.AddComponent<CollisionHandler>();
 
-			// start the emitter
-			// or not since it starts itself anyway...
-			// particleSystem.Play();
-		}
+            // start the emitter
+            // or not since it starts itself anyway...
+            // particleSystem.Play();
+        }
     }
 }

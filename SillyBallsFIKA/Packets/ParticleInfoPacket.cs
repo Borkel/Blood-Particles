@@ -10,7 +10,7 @@ namespace BloodParticlesFikaSync.Packets
         public void Deserialize(NetDataReader reader)
         {
             ParticleInfo = reader.GetBloodParticlePacket();
-		}
+        }
 
         public void Serialize(NetDataWriter writer)
         {

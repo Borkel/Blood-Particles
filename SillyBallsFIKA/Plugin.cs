@@ -17,60 +17,60 @@ namespace BloodParticlesFikaSync
 
         void Awake()
         {
-			FikaEventDispatcher.SubscribeEvent<FikaGameCreatedEvent>(OnFikaGameCreated);
-			FikaEventDispatcher.SubscribeEvent<FikaNetworkManagerCreatedEvent>(OnFikaNetworkManagerCreatedEvent);
+            FikaEventDispatcher.SubscribeEvent<FikaGameCreatedEvent>(OnFikaGameCreated);
+            FikaEventDispatcher.SubscribeEvent<FikaNetworkManagerCreatedEvent>(OnFikaNetworkManagerCreatedEvent);
             FikaEventDispatcher.SubscribeEvent<FikaNetworkManagerDestroyedEvent>(OnFikaNetworkManagerDestroyedEvent);
 
             _applyDamageInfoPatch = new ApplyDamageInfoPatch();
-			// Set default state of the patch to disabled
+            // Set default state of the patch to disabled
             _applyDamageInfoPatch.Disable();
 
-			Logger.LogInfo("Loaded BloodParticles Fika Sync");
+            Logger.LogInfo("Loaded BloodParticles Fika Sync");
         }
 
-		private void OnFikaGameCreated(FikaGameCreatedEvent @event)
-		{
-			ParticleHelper.Instance.OnBloodParticleCreated += OnBloodParticleCreated;
-		}
+        private void OnFikaGameCreated(FikaGameCreatedEvent @event)
+        {
+            ParticleHelper.Instance.OnBloodParticleCreated += OnBloodParticleCreated;
+        }
 
-		private void OnBloodParticleCreated(object sender, ParticleInfo ParticleInfo)
-		{
-			ParticleInfoPacket packet = new()
-			{
-				ParticleInfo = ParticleInfo
-			};
+        private void OnBloodParticleCreated(object sender, ParticleInfo ParticleInfo)
+        {
+            ParticleInfoPacket packet = new()
+            {
+                ParticleInfo = ParticleInfo
+            };
 
-			if (FikaBackendUtils.IsServer)
+            if (FikaBackendUtils.IsServer)
             {
                 Singleton<FikaServer>.Instance.SendDataToAll(ref packet, LiteNetLib.DeliveryMethod.Unreliable);
             }
-		}
+        }
 
-		private void OnFikaNetworkManagerCreatedEvent(FikaNetworkManagerCreatedEvent ManagerCreatedEvent)
-		{
-			// Enable this to run only on the host, host will broadcast to clients
+        private void OnFikaNetworkManagerCreatedEvent(FikaNetworkManagerCreatedEvent ManagerCreatedEvent)
+        {
+            // Enable this to run only on the host, host will broadcast to clients
             if (FikaBackendUtils.IsServer)
             {
                 _applyDamageInfoPatch.Enable();
             }
 
-			ManagerCreatedEvent.Manager.RegisterPacket<ParticleInfoPacket>(OnPacketReceived);
-		}
+            ManagerCreatedEvent.Manager.RegisterPacket<ParticleInfoPacket>(OnPacketReceived);
+        }
 
-		private void OnFikaNetworkManagerDestroyedEvent(FikaNetworkManagerDestroyedEvent ManagerCreatedEvent)
-		{
-			// Disable again for the case if the current host is not the host next raid
-			if (FikaBackendUtils.IsServer)
-			{
-				_applyDamageInfoPatch.Disable();
-			}
+        private void OnFikaNetworkManagerDestroyedEvent(FikaNetworkManagerDestroyedEvent ManagerCreatedEvent)
+        {
+            // Disable again for the case if the current host is not the host next raid
+            if (FikaBackendUtils.IsServer)
+            {
+                _applyDamageInfoPatch.Disable();
+            }
 
-			ManagerCreatedEvent.Manager.RegisterPacket<ParticleInfoPacket>(OnPacketReceived);
-		}
+            ManagerCreatedEvent.Manager.RegisterPacket<ParticleInfoPacket>(OnPacketReceived);
+        }
 
-		private void OnPacketReceived(ParticleInfoPacket packet)
+        private void OnPacketReceived(ParticleInfoPacket packet)
         {
             ParticleHelper.Instance.CreateBlood(packet.ParticleInfo, false);
-		}
+        }
     }
 }
