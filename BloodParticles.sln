@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloodParticlesSPT", "SillyBallsSPT\BloodParticlesSPT.csproj", "{513F5F9D-9552-4BAC-822A-517964229F32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloodParticlesFIKA", "SillyBallsFIKA\BloodParticlesFIKA.csproj", "{DB27B67F-DC6E-42DA-9F3E-2E1ADC781959}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloodParticlesFika", "SillyBallsFIKA\BloodParticlesFika.csproj", "{DB27B67F-DC6E-42DA-9F3E-2E1ADC781959}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

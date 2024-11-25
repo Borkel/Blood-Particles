@@ -23,7 +23,7 @@ namespace BloodParticles
         public float BloodVelocityMin;
         public float BloodVelocityMax;
 
-        public ParticleInfo(DamageInfo damageInfo, Vector3 position, Vector3 direction, ParticleSystemShapeType emitterShape, float bloodAngle, float bloodMult, float bloodMin, float bloodMax)
+        public ParticleInfo(DamageInfoStruct damageInfo, Vector3 position, Vector3 direction, ParticleSystemShapeType emitterShape, float bloodAngle, float bloodMult, float bloodMin, float bloodMax)
         {
             Damage = damageInfo.Damage;
             DamageType = damageInfo.DamageType;
@@ -80,12 +80,15 @@ namespace BloodParticles
         }
     }
 
-    public static class ParticleHelper
+    public class ParticleHelper
     {
+        public static ParticleHelper Instance = new ParticleHelper();
+        public event System.EventHandler<ParticleInfo> OnBloodParticleCreated = delegate { };
+
         private static AssetBundle _bloodBundle;
         private static GameObject _bloodPrefab;
 
-        public static void LoadParticleBundle()
+        public void LoadParticleBundle()
         {
             string bundleDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string bundlePath = $"{bundleDirectory}\\bloodparticles";
@@ -94,9 +97,14 @@ namespace BloodParticles
             _bloodPrefab = _bloodBundle.LoadAsset<GameObject>("blood13");
         }
 
-        public static void CreateBlood(ParticleInfo particleInfo)
+        public void CreateBlood(ParticleInfo particleInfo, bool broadcast)
         {
-            Vector3 position = particleInfo.Position;
+            if (broadcast)
+            {
+                OnBloodParticleCreated?.Invoke(this, particleInfo);
+            }
+
+			Vector3 position = particleInfo.Position;
             Quaternion rotation = Quaternion.LookRotation(particleInfo.Direction);
             EDamageType damageType = particleInfo.DamageType;
 
@@ -127,9 +135,9 @@ namespace BloodParticles
             // add collisionhandler component
             CollisionHandler collisionHandler = newParticle.AddComponent<CollisionHandler>();
 
-            // start the emitter
-            // or not since it starts itself anyway...
-            // particleSystem.Play();
-        }
+			// start the emitter
+			// or not since it starts itself anyway...
+			// particleSystem.Play();
+		}
     }
 }

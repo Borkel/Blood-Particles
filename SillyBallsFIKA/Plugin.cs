@@ -1,67 +1,76 @@
 ﻿using BepInEx;
-using BepInEx.Configuration;
-using BepInEx.Logging;
 using BloodParticles.Patches;
 using Fika.Core.Modding;
 using Fika.Core.Modding.Events;
-using System.IO;
-using System.Reflection;
-using BitPacking;
-using BloodParticles.Packets;
-using LiteNetLib.Utils;
-using UnityEngine;
+using Fika.Core.Coop.Utils;
+using Comfort.Common;
+using Fika.Core.Networking;
+using BloodParticles;
+using BloodParticlesFikaSync.Packets;
 
-namespace BloodParticles
+namespace BloodParticlesFikaSync
 {
-    [BepInPlugin("com.borkel.bloodparticles", "Borkel's Blood Particles", "1.0.0")]
+    [BepInPlugin("com.borkel.bloodparticlesfikasync", "Borkel's Blood Particles Fika Sync", "1.0.0")]
     public class Plugin : BaseUnityPlugin
     {
-        public static ManualLogSource logger;
-        public static NetDataWriter writer;
-        public static readonly string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        //Silly Balls Config Settings
-        
-        public static GameObject bloodParticlesHead;
-        public static GameObject bloodParticlesHeadShort;
-        public static GameObject bloodParticlesBody;
-        public static GameObject bloodParticlesBodyShort;
+        private static ApplyDamageInfoPatch _applyDamageInfoPatch;
 
-        public static ConfigEntry<bool> LongerParticles;
         void Awake()
         {
-            LongerParticles = Config.Bind("0.Particles", "Longer lasting particles", false, "Extends the duration of the particles");
+			FikaEventDispatcher.SubscribeEvent<FikaGameCreatedEvent>(OnFikaGameCreated);
+			FikaEventDispatcher.SubscribeEvent<FikaNetworkManagerCreatedEvent>(OnFikaNetworkManagerCreatedEvent);
+            FikaEventDispatcher.SubscribeEvent<FikaNetworkManagerDestroyedEvent>(OnFikaNetworkManagerDestroyedEvent);
 
-            string pluginDirectory = $"{directory}";//plugin folder
-            string bundlePath = $"{pluginDirectory}\\bloodparticles";
-            AssetBundle assetBundle = AssetBundle.LoadFromFile(bundlePath);
-            if (assetBundle == null)
-                Logger.LogMessage("assetbundle");
-            bloodParticlesHead = assetBundle.LoadAsset<GameObject>("BloodParticlesHead");
-            bloodParticlesHeadShort = assetBundle.LoadAsset<GameObject>("BloodParticlesHeadShort");
-            bloodParticlesBody = assetBundle.LoadAsset<GameObject>("BloodParticlesBody");
-            bloodParticlesBodyShort = assetBundle.LoadAsset<GameObject>("BloodParticlesBodyShort");
-            if(bloodParticlesBody == null || bloodParticlesBodyShort==null || bloodParticlesHead == null || bloodParticlesHeadShort==null)
+            _applyDamageInfoPatch = new ApplyDamageInfoPatch();
+			// Set default state of the patch to disabled
+            _applyDamageInfoPatch.Disable();
+
+			Logger.LogInfo("Loaded BloodParticles Fika Sync");
+        }
+
+		private void OnFikaGameCreated(FikaGameCreatedEvent @event)
+		{
+			ParticleHelper.Instance.OnBloodParticleCreated += OnBloodParticleCreated;
+		}
+
+		private void OnBloodParticleCreated(object sender, ParticleInfo ParticleInfo)
+		{
+			ParticleInfoPacket packet = new()
+			{
+				ParticleInfo = ParticleInfo
+			};
+
+			if (FikaBackendUtils.IsServer)
             {
-                Logger.LogError("error loading particles assets");
-                return;
+                Singleton<FikaServer>.Instance.SendDataToAll(ref packet, LiteNetLib.DeliveryMethod.Unreliable);
             }
-            
-            writer = new NetDataWriter();
-            FikaEventDispatcher.SubscribeEvent<FikaClientCreatedEvent>(OnClientCreated);
-            new ApplyDamageInfoPatch().Enable();
+		}
 
-            Logger.LogInfo("Loaded BloodParticles");
-        }
-        
-        private void OnClientCreated(FikaClientCreatedEvent @event)
+		private void OnFikaNetworkManagerCreatedEvent(FikaNetworkManagerCreatedEvent ManagerCreatedEvent)
+		{
+			// Enable this to run only on the host, host will broadcast to clients
+            if (FikaBackendUtils.IsServer)
+            {
+                _applyDamageInfoPatch.Enable();
+            }
+
+			ManagerCreatedEvent.Manager.RegisterPacket<ParticleInfoPacket>(OnPacketReceived);
+		}
+
+		private void OnFikaNetworkManagerDestroyedEvent(FikaNetworkManagerDestroyedEvent ManagerCreatedEvent)
+		{
+			// Disable again for the case if the current host is not the host next raid
+			if (FikaBackendUtils.IsServer)
+			{
+				_applyDamageInfoPatch.Disable();
+			}
+
+			ManagerCreatedEvent.Manager.RegisterPacket<ParticleInfoPacket>(OnPacketReceived);
+		}
+
+		private void OnPacketReceived(ParticleInfoPacket packet)
         {
-            @event.Client.packetProcessor.SubscribeNetSerializable<SpawnBloodParticlePacket>(HandleSpawnBloodParticlePacketClient);
-        }
-        
-        private void HandleSpawnBloodParticlePacketClient(SpawnBloodParticlePacket packet)
-        {
-            //Received packet from server replicate on client
-            ApplyDamageInfoPatch.SpawnBloodParticleFromServerOnClient(packet.spawnPosition, packet.type);
-        }
+            ParticleHelper.Instance.CreateBlood(packet.ParticleInfo, false);
+		}
     }
 }
