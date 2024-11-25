@@ -64,8 +64,6 @@ namespace BloodParticlesFikaSync
             {
                 _applyDamageInfoPatch.Disable();
             }
-
-            ManagerCreatedEvent.Manager.RegisterPacket<ParticleInfoPacket>(OnPacketReceived);
         }
 
         private void OnPacketReceived(ParticleInfoPacket packet)
