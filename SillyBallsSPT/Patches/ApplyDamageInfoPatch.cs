@@ -8,7 +8,7 @@ namespace BloodParticles.Patches
 {
     public class ApplyDamageInfoPatch : ModulePatch
     {
-        private static bool AttackPenetrated(DamageInfo damageInfo)
+        private static bool AttackPenetrated(DamageInfoStruct damageInfo)
         {
             return String.IsNullOrEmpty(damageInfo.BlockedBy) || String.IsNullOrEmpty(damageInfo.DeflectedBy);
         }
@@ -18,7 +18,7 @@ namespace BloodParticles.Patches
             return damageType == EDamageType.Explosion || damageType == EDamageType.Landmine;
         }
 
-        private static bool ShouldNotDoExitWound(DamageInfo damageInfo)
+        private static bool ShouldNotDoExitWound(DamageInfoStruct damageInfo)
         {
             return damageInfo.Damage < 30 || damageInfo.DamageType == EDamageType.Melee || damageInfo.DamageType == EDamageType.GrenadeFragment;
         }
@@ -29,7 +29,7 @@ namespace BloodParticles.Patches
         }
 
         [PatchPostfix]
-        public static void Postfix(DamageInfo damageInfo, EBodyPart bodyPartType, EBodyPartColliderType colliderType, float absorbed)
+        public static void Postfix(DamageInfoStruct damageInfo, EBodyPart bodyPartType, EBodyPartColliderType colliderType, float absorbed)
         {
             if (!Plugin.Enabled.Value)
             {
@@ -63,7 +63,7 @@ namespace BloodParticles.Patches
             Vector3 hitPos = damageInfo.HitPoint;
             Vector3 entryDirection = -damageInfo.Direction.normalized;
 
-            ParticleHelper.CreateBlood(new ParticleInfo(
+            ParticleHelper.Instance.CreateBlood(new ParticleInfo(
                 damageInfo,
                 hitPos,
                 entryDirection,
@@ -72,7 +72,7 @@ namespace BloodParticles.Patches
                 Plugin.EntryBloodAmountMultiplier.Value * bloodMult,
                 Plugin.EntryBloodVelocityMin.Value,
                 Plugin.EntryBloodVelocityMax.Value
-            ));
+            ), true);
 
             // only do exit wounds if enough damage is applied or not melee (buckshot should not go through)
             if (ShouldNotDoExitWound(damageInfo))
@@ -83,7 +83,7 @@ namespace BloodParticles.Patches
             // exit wound
             Vector3 exitDirection = damageInfo.Direction.normalized;
 
-            ParticleHelper.CreateBlood(new ParticleInfo(
+            ParticleHelper.Instance.CreateBlood(new ParticleInfo(
                 damageInfo,
                 hitPos,
                 exitDirection,
@@ -92,7 +92,7 @@ namespace BloodParticles.Patches
                 Plugin.ExitBloodAmountMultiplier.Value * bloodMult,
                 Plugin.ExitBloodVelocityMin.Value,
                 Plugin.ExitBloodVelocityMax.Value
-            ));
+            ), true);
         }
     }
 }

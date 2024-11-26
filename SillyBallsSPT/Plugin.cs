@@ -102,7 +102,7 @@ namespace BloodParticles
                     new ConfigurationManagerAttributes { Order = 910 }
                 ));
 
-            ParticleHelper.LoadParticleBundle();
+            ParticleHelper.Instance.LoadParticleBundle();
 
             new ApplyDamageInfoPatch().Enable();
 

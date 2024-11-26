@@ -7,11 +7,12 @@
     <ProjectGuid>{DB27B67F-DC6E-42DA-9F3E-2E1ADC781959}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BloodParticles</RootNamespace>
-    <AssemblyName>BloodParticles</AssemblyName>
+    <RootNamespace>BloodParticlesFikaSync</RootNamespace>
+    <AssemblyName>BloodParticlesFikaSync</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -79,10 +80,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Packets\SpawnBloodParticlePacket.cs" />
-    <Compile Include="Patches\ApplyDamageInfoPatch.cs" />
+    <Compile Include="BloodParticlesSerializationExtensions.cs" />
+    <Compile Include="Packets\ParticleInfoPacket.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SillyBallsSPT\BloodParticlesSPT.csproj">
+      <Project>{513f5f9d-9552-4bac-822a-517964229f32}</Project>
+      <Name>BloodParticlesSPT</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
