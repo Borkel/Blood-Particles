@@ -32,26 +32,29 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\SPTarkov3.9.0\EscapeFromTarkov_Data\Managed\Assembly-CSharp.dll</HintPath>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\dependencies\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="BepInEx, Version=5.4.22.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\SPTarkov3.9.0\BepInEx\core\BepInEx.dll</HintPath>
+    <Reference Include="BepInEx">
+      <HintPath>..\dependencies\BepInEx.dll</HintPath>
     </Reference>
-    <Reference Include="Comfort, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\SPTarkov3.9.0\EscapeFromTarkov_Data\Managed\Comfort.dll</HintPath>
+    <Reference Include="Comfort">
+      <HintPath>..\dependencies\Comfort.dll</HintPath>
+    </Reference>
+    <Reference Include="Comfort.Unity">
+      <HintPath>..\dependencies\Comfort.Unity.dll</HintPath>
     </Reference>
     <Reference Include="spt-common">
-      <HintPath>C:\SPTarkov3.9.0\BepInEx\plugins\spt\spt-common.dll</HintPath>
+      <HintPath>..\dependencies\spt-common.dll</HintPath>
     </Reference>
     <Reference Include="spt-core">
-      <HintPath>C:\SPTarkov3.9.0\BepInEx\plugins\spt\spt-core.dll</HintPath>
+      <HintPath>..\dependencies\spt-core.dll</HintPath>
+    </Reference>
+    <Reference Include="spt-custom">
+      <HintPath>..\dependencies\spt-custom.dll</HintPath>
     </Reference>
     <Reference Include="spt-reflection">
-      <HintPath>C:\SPTarkov3.9.0\BepInEx\plugins\spt\spt-reflection.dll</HintPath>
+      <HintPath>..\dependencies\spt-reflection.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -65,19 +68,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\SPTarkov3.9.0\EscapeFromTarkov_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\SPTarkov3.8.0\EscapeFromTarkov_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>..\dependencies\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>C:\SPTarkov3.8.0\EscapeFromTarkov_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\dependencies\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\SPTarkov3.8.0\EscapeFromTarkov_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>..\dependencies\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>C:\SPTarkov3.8.0\EscapeFromTarkov_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>..\dependencies\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
